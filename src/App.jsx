@@ -10,7 +10,7 @@ function App() {
 
     const [data, setData] = useState(loadData());
 
-    return (<BrowserRouter>
+    return (<BrowserRouter basename='/CGP-front/'>
         <Routes>
             <Route path="/client/:id" element={<ClientPage data={data} />} />
             <Route path="/" element={<ListPage data={data} />} />
