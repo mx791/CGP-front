@@ -1,13 +1,21 @@
 import Button from "../components/base/Button"
 import { useNavigate } from "react-router";
-import { createClient, loadData } from "../data/ClientData"
+import { getUserList, createClient } from "../data/ClientData";
 import { useEffect, useState } from "react";
 
-const ListPage = ({}) => {
 
-    let [data, setData] = useState({});
+
+const ListPage = () => {
+
+    let [data, setData] = useState([]);
+
     useEffect(() => {
-        setData(loadData())
+        const a = async () => {
+            const client = await getUserList();
+            setData(client);
+            console.log(client)
+        };
+        a();
     }, [])
     let navigate = useNavigate();
 
@@ -15,10 +23,10 @@ const ListPage = ({}) => {
         <br/>
         <h1>Liste des clients:</h1>
 
-        { Object.keys(data).length == 0 ? (<>
+        { data.length == 0 ? (<>
             <p>Aucun client...</p>
         </>) : (<>
-            {Object.keys(data).length} clients
+            {data.length} clients
         </>) }
 
         <br/>
@@ -33,15 +41,15 @@ const ListPage = ({}) => {
             </thead>
             <tbody>
 
-            { Object.keys(data).map((itm, id) => (<tr key={"client" + itm}>
+            { data.map((itm, id) => (<tr key={"client" + id}>
                 <td scope="col">
-                    {data[itm].name}
+                    {itm.client_full_name}
                 </td>
                 <td scope="col">
-                    {data[itm].envelopes.length}
+                    {itm.wrappers.length}
                 </td>
                 <td scope="col">
-                    <Button text="Editer" onClick={() => navigate("/client/" + itm)}/>
+                    <Button text="Editer" onClick={() => navigate("/client/" + itm.id)}/>
                 </td>
             </tr>))}
             </tbody>

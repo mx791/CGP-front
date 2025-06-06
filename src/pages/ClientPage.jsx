@@ -5,7 +5,7 @@ import { getClientData, saveClientData } from "../data/ClientData";
 import TextInput from "../components/base/TextInput";
 import SelectInput from "../components/base/SelectInput";
 
-const ClientPage = ({data}) => {
+const ClientPage = () => {
 
     let navigate = useNavigate();
     let { id } = useParams();
@@ -17,17 +17,20 @@ const ClientPage = ({data}) => {
 
     const typeEnveloppes = ["Assurance Vie", "PEA", "CTO"];
 
-    useEffect(() => {
-        let clientData = getClientData(id);
-        if (clientData === false) {
-            alert("Client id " + id + " not found...")
-            navigate("/");
-        } else {
-            setUserData(clientData);
-            setClientName(Object.hasOwn(clientData, "name") ? clientData["name"] : "");
-            setClienteResume(Object.hasOwn(clientData, "resume") ? clientData["resume"] : "");
-            setEnvelopes(Object.hasOwn(clientData, "envelopes") ? clientData["envelopes"] : []);
-        }
+    useEffect( () => {
+        const a = async () => {
+            let clientData = await getClientData(id);
+            if (clientData === false) {
+                alert("Client id " + id + " not found...")
+                navigate("/");
+            } else {
+                setUserData(clientData);
+                setClientName(Object.hasOwn(clientData, "client_full_name") ? clientData["client_full_name"] : "");
+                setClienteResume(Object.hasOwn(clientData, "client_summary") ? clientData["client_summary"] : "");
+                setEnvelopes(Object.hasOwn(clientData, "wrappers") ? clientData["wrappers"] : []);
+            }
+        };
+        a();
     }, [])
 
 
@@ -62,7 +65,7 @@ const ClientPage = ({data}) => {
                         }} />
                     </article>
                     <article className="col">
-                        <SelectInput value={env_itm.type} name={"Type d'enveloppe"} options={typeEnveloppes} setValue={(e) => {
+                        <SelectInput value={env_itm.kind} name={"Type d'enveloppe"} options={typeEnveloppes} setValue={(e) => {
                             env_itm.type = e.target.value;
                             setCounter(counter+1)
                         }}/>
@@ -80,7 +83,7 @@ const ClientPage = ({data}) => {
             
             <br/>
             <p>Supports:</p>
-            { env_itm.produits.map((support_itm, support_index) => (<div key={"support_" + support_index} className="row">
+            { env_itm.products.map((support_itm, support_index) => (<div key={"support_" + support_index} className="row">
                 <article className="col">
                     <TextInput value={support_itm.isin} name={"ISIN"} setValue={(e) => {
                         support_itm.isin = e.target.value;
@@ -88,8 +91,8 @@ const ClientPage = ({data}) => {
                     }} />
                 </article>
                 <article className="col">
-                    <TextInput value={support_itm.valeur} name={"Valeur"} setValue={(e) => {
-                        support_itm.valeur = e.target.value;
+                    <TextInput value={support_itm.value} name={"Valeur"} setValue={(e) => {
+                        support_itm.value = e.target.value;
                         setCounter(counter+1)
                     }} />
                 </article>
@@ -101,14 +104,14 @@ const ClientPage = ({data}) => {
                 </article>
             </div>)) }
             <Button text={"Ajouter un support"} onClick={() => {
-                env_itm.produits.push({"isin": "", "valeur": 0});
+                env_itm.products.push({"isin": "", "valeur": 0});
                 setCounter(counter+1);
             }}/>
 
         </div></div><br/></div>)) }
         <br />
         <Button text={"Ajouter une enveloppe"} onClick={() => {
-            envelopes.push({"name": "", "type": "Autre", "produits": []});
+            envelopes.push({"name": "", "kind": "Autre", "products": []});
             setCounter(counter+1);
         }}/>
 
@@ -116,12 +119,13 @@ const ClientPage = ({data}) => {
         <br />
 
         <Button text={(<>
-                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>Sauvegarder
+                <span className="glyphicon glyphicon-search" aria-hidden="true"></span>Sauvegarder
             </>)} onClick={() => {
-            saveClientData(id, {
-                "name": clientName,
-                "resume": clienteResume,
-                "envelopes": envelopes,
+            saveClientData({
+                "id": id,
+                "client_full_name": clientName,
+                "client_summary": clienteResume,
+                "wrappers": envelopes,
             })
             navigate("/")
         }}/>
@@ -130,13 +134,10 @@ const ClientPage = ({data}) => {
             navigate("/")
         }}/>
         <span>  </span>
-        <Button text={"Generer une revue du patrimoine"} onClick={() => {
-            alert(JSON.stringify({
-                "name": clientName,
-                "resume": clienteResume,
-                "envelopes": envelopes,
-            }))
-        }}/>
+        <Button
+            text={"Generer une revue du patrimoine"}
+            onClick={() => window.open(import.meta.env.VITE_BACKEND_URL + "/api/create_slides/" + id, '_blank', 'noopener,noreferrer')}
+        />
 
     <br />
     <br />
