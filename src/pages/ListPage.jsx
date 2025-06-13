@@ -58,7 +58,7 @@ const ListPage = () => {
         <Button text={"Nouveau client"} onClick={async () => {
             let newtClient = await createClient();
             navigate("/client/" + newtClient);
-        }}() />
+        }()} />
     </div>)
 }
 
