@@ -56,7 +56,7 @@ const ListPage = () => {
         </table>
 
         <Button text={"Nouveau client"} onClick={() => {
-            let newtClient = createClient();
+            let newtClient = await createClient();
             navigate("/client/" + newtClient);
         }} />
     </div>)
