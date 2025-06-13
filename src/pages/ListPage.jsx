@@ -55,10 +55,10 @@ const ListPage = () => {
             </tbody>
         </table>
 
-        <Button text={"Nouveau client"} onClick={() => {
+        <Button text={"Nouveau client"} onClick={async () => {
             let newtClient = await createClient();
             navigate("/client/" + newtClient);
-        }} />
+        }}() />
     </div>)
 }
 
