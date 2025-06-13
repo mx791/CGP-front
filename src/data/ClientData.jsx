@@ -18,7 +18,7 @@ export async function deleteClient(clientId) {
 
 
 export async function saveClientData(data) {
-    return (await fetch(back_url + "/api/users", {
+    return await (await fetch(back_url + "/api/users", {
         method: "POST",
         body: JSON.stringify(data)
     })).json();
